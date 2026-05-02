@@ -1,0 +1,75 @@
+name: Update shared menu
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload_base64:
+        description: 'Payload aus der Webseite einfügen'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  update-menu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update menus.json
+        env:
+          PAYLOAD_BASE64: ${{ inputs.payload_base64 }}
+        run: |
+          python3 <<'PY'
+          import base64
+          import json
+          import os
+          from pathlib import Path
+
+          allowed_restaurants = {
+              'graces-asienshop',
+              'cafe-bauturm',
+              'punto-pasta',
+              'rich-and-greens',
+          }
+
+          raw = os.environ.get('PAYLOAD_BASE64', '').strip()
+          if not raw:
+              raise SystemExit('payload_base64 fehlt')
+
+          payload = json.loads(base64.b64decode(raw).decode('utf-8'))
+          restaurant_id = payload.get('restaurantId')
+          if restaurant_id not in allowed_restaurants:
+              raise SystemExit(f'Unbekannte restaurantId: {restaurant_id!r}')
+
+          path = Path('menus.json')
+          if path.exists():
+              menus = json.loads(path.read_text(encoding='utf-8') or '{}')
+          else:
+              menus = {}
+
+          menus[restaurant_id] = {
+              'text': str(payload.get('text') or '').strip(),
+              'imageUrl': str(payload.get('imageUrl') or '').strip(),
+              'updatedAt': int(payload.get('updatedAt') or 0),
+          }
+
+          path.write_text(
+              json.dumps(menus, ensure_ascii=False, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8'
+          )
+          PY
+
+      - name: Commit changed menu data
+        run: |
+          if git diff --quiet -- menus.json; then
+            echo "menus.json ist unverändert."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add menus.json
+          git commit -m "Update shared menu"
+          git push

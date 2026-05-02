@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kölner Mittagstisch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+
+    <header class="app-header">
+      <div class="header-brand">
+        <span class="brand-icon">🍽️</span>
+        <div class="brand-text">
+          <h1>Kölner Mittagstisch</h1>
+          <div class="header-date" id="current-date"></div>
+        </div>
+      </div>
+      <button class="btn btn-ghost" id="refresh-all-btn" title="Bauturm Menü automatisch laden">
+        <span id="refresh-icon">⟳</span> Auto-laden
+      </button>
+    </header>
+
+    <div class="app-layout">
+
+      <!-- ── Main Column ───────────────────────────────── -->
+      <main class="main-col">
+
+        <!-- Pool of available restaurants -->
+        <section class="pool-section" id="pool-section">
+          <div class="pool-header">
+            <span class="label-sm">Weitere Restaurants – per Drag&Drop hinzufügen</span>
+          </div>
+          <div class="pool-grid" id="pool-grid"></div>
+        </section>
+
+        <!-- Active restaurant cards -->
+        <section class="cards-section">
+          <div class="cards-header">
+            <span class="label-sm">Deine Mittagsauswahl</span>
+          </div>
+          <div class="restaurant-list" id="restaurant-list"
+               ondragover="App.onListDragOver(event)"
+               ondragleave="App.onListDragLeave(event)"
+               ondrop="App.onListDrop(event)">
+            <!-- cards rendered by JS -->
+          </div>
+        </section>
+
+      </main>
+
+      <!-- ── Coffee Sidebar ─────────────────────────────── -->
+      <aside class="coffee-col">
+        <div class="coffee-tracker">
+
+          <!-- Banner -->
+          <div class="tracker-banner">
+            <div class="banner-row">
+              <h2 class="tracker-title">☕ Kaffee Tracker</h2>
+              <div class="count-pill">
+                <span id="coffee-count" class="count-num">0</span>
+                <span class="count-unit">heute</span>
+              </div>
+            </div>
+            <div class="banner-total" id="coffee-total-today">€ 0,00</div>
+            <div class="banner-label">Heute ausgegeben</div>
+          </div>
+
+          <!-- Add coffee -->
+          <div class="add-section">
+            <p class="label-sm" style="margin-bottom: 10px">Preis wählen</p>
+            <div class="preset-grid" id="preset-grid">
+              <button class="preset-btn" data-price="1.50">
+                <span class="preset-name">Espresso</span>
+                <span class="preset-price">€ 1,50</span>
+              </button>
+              <button class="preset-btn" data-price="2.50">
+                <span class="preset-name">Americano</span>
+                <span class="preset-price">€ 2,50</span>
+              </button>
+              <button class="preset-btn" data-price="3.00">
+                <span class="preset-name">Cappuccino</span>
+                <span class="preset-price">€ 3,00</span>
+              </button>
+              <button class="preset-btn" data-price="3.50">
+                <span class="preset-name">Latte</span>
+                <span class="preset-price">€ 3,50</span>
+              </button>
+            </div>
+            <div class="custom-row">
+              <input class="input" type="number" id="custom-price"
+                     placeholder="Eigener Preis €" step="0.10" min="0.01" />
+              <input class="input" type="text" id="coffee-type"
+                     placeholder="Typ (optional)" />
+            </div>
+            <button class="add-btn" id="add-coffee-btn">
+              ☕ Kaffee hinzufügen
+            </button>
+          </div>
+
+          <!-- Today's history -->
+          <div class="history-section">
+            <p class="label-sm" style="margin-bottom: 10px">Heute</p>
+            <div class="entry-list" id="coffee-list">
+              <p class="empty-msg">Noch kein Kaffee heute ☕</p>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="stats-section">
+            <p class="label-sm" style="margin-bottom: 12px">Statistik</p>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span class="stat-period">Diese Woche</span>
+                <span class="stat-count" id="week-count">0 ☕</span>
+                <span class="stat-eur" id="week-cost">€ 0,00</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-period">Dieser Monat</span>
+                <span class="stat-count" id="month-count">0 ☕</span>
+                <span class="stat-eur" id="month-cost">€ 0,00</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+    </div><!-- /app-layout -->
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
